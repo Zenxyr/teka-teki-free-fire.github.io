@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Game Teka-Teki Free Fire</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        margin-top: 50px;
+    }
+    #game, #restart, #win {
+        display: none;
+    }
+    .question {
+        margin: 20px 0;
+    }
+    #easy-buttons button {
+        background-color: lightgreen;
+        border: none;
+        padding: 10px 20px;
+        margin: 5px;
+        cursor: pointer;
+    }
+    #hard-buttons button {
+        background-color: lightcoral;
+        border: none;
+        padding: 10px 20px;
+        margin: 5px;
+        cursor: pointer;
+    }
+</style>
+</head>
+<body>
+<h1>Game Teka-Teki Free Fire</h1>
+
+<div id="difficulty">
+    <p>Pilih tingkat kesulitan:</p>
+    <button onclick="startGame('easy')">Mudah</button>
+    <button onclick="startGame('hard')">Sulit</button>
+</div>
+
+<div id="game">
+    <p id="level">Level: 1</p>
+    <div id="question-container" class="question">
+        <p id="question">Pertanyaan akan muncul di sini</p>
+        <div id="easy-buttons">
+            <button onclick="answerQuestion('A')">A</button>
+            <button onclick="answerQuestion('B')">B</button>
+            <button onclick="answerQuestion('C')">C</button>
+            <button onclick="answerQuestion('D')">D</button>
+        </div>
+        <div id="hard-buttons">
+            <button onclick="answerQuestion('A')">A</button>
+            <button onclick="answerQuestion('B')">B</button>
+            <button onclick="answerQuestion('C')">C</button>
+            <button onclick="answerQuestion('D')">D</button>
+        </div>
+    </div>
+</div>
+
+<div id="restart">
+    <p>Anda kalah. Coba lagi!</p>
+    <button onclick="location.reload()">Ulangi Game</button>
+</div>
+
+<div id="win">
+    <p style="color: green;">Selamat, Anda menang jila ingin bermain lagi silahkan pencet tombol ulang di bawah ini!</p>
+    <button onclick="location.reload()">Ulangi Game</button>
+</div>
+
+<script>
+    const easyQuestions = [
+        { question: "Senjata manakah yang memiliki peluru terbanyak?", options: ['A. AWM', 'B. UMP', 'C. M79', 'D. M1014'], answer: 'B' },
+        { question: "Siapakah karakter yang memiliki skill penyembuhan?", options: ['A. Kelly', 'B. Alok', 'C. Andrew', 'D. Kla'], answer: 'B' },
+        { question: "Apa nama mode permainan yang melibatkan 50 pemain?", options: ['A. Battle Royale', 'B. Clash Squad', 'C. Rush Hour', 'D. Bomb Squad'], answer: 'A' },
+        { question: "Apa fungsi dari gloo wall?", options: ['A. Menyerang musuh', 'B. Pertahanan diri', 'C. Menambah kecepatan', 'D. Menyembuhkan'], answer: 'B' },
+        { question: "Siapakah karakter dengan kecepatan berlari tinggi?", options: ['A. Moco', 'B. Laura', 'C. Kelly', 'D. Hayato'], answer: 'C' }
+    ];
+
+    const hardQuestions = [
+        { question: "Apa nama skill karakter Jota?", options: ['A. Sustained Raids', 'B. Bushido', 'C. Hacker’s Eye', 'D. Camouflage'], answer: 'A' },
+        { question: "Senjata manakah yang memiliki damage terbesar?", options: ['A. Groza', 'B. Kar98k', 'C. M1887', 'D. MP40'], answer: 'C' },
+        { question: "Siapakah karakter yang memiliki skill deteksi musuh?", options: ['A. Alvaro', 'B. Clu', 'C. Rafael', 'D. Notora'], answer: 'B' },
+        { question: "Map manakah yang memiliki area tersulit?", options: ['A. Bermuda', 'B. Kalahari', 'C. Purgatory', 'D. Alpine'], answer: 'B' },
+        { question: "Apa fungsi dari air drop?", options: ['A. Menyembuhkan', 'B. Menambah armor', 'C. Mendapatkan senjata langka', 'D. Melihat musuh'], answer: 'C' }
+    ];
+
+    let currentLevel = 1;
+    let currentQuestions = [];
+
+    function startGame(difficulty) {
+        currentLevel = 1;
+        currentQuestions = difficulty === 'easy' ? shuffleArray([...easyQuestions]) : shuffleArray([...hardQuestions]);
+        document.getElementById('difficulty').style.display = 'none';
+        document.getElementById('game').style.display = 'block';
+        document.getElementById('easy-buttons').style.display = difficulty === 'easy' ? 'block' : 'none';
+        document.getElementById('hard-buttons').style.display = difficulty === 'hard' ? 'block' : 'none';
+        loadQuestion();
+    }
+
+    function loadQuestion() {
+        if (currentLevel > 5) {
+            document.getElementById('game').style.display = 'none';
+            document.getElementById('win').style.display = 'block';
+            return;
+        }
+        const questionData = currentQuestions[currentLevel - 1];
+        document.getElementById('level').innerText = `Level: ${currentLevel}`;
+        document.getElementById('question').innerText = questionData.question;
+        const buttons = currentLevel <= 5 ? document.querySelectorAll('#easy-buttons button') : document.querySelectorAll('#hard-buttons button');
+        buttons.forEach((button, index) => {
+            button.innerText = questionData.options[index];
+            button.onclick = () => answerQuestion(questionData.options[index][0]);
+        });
+    }
+
+    function answerQuestion(answer) {
+        const correctAnswer = currentQuestions[currentLevel - 1].answer;
+        if (answer === correctAnswer) {
+            currentLevel++;
+            loadQuestion();
+        } else {
+            document.getElementById('game').style.display = 'none';
+            document.getElementById('restart').style.display = 'block';
+        }
+    }
+
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+</script>
+
+</body>
+</html>
